@@ -34,18 +34,17 @@ RUN wget --no-verbose -O /opt/selenium-server.jar "https://github.com/SeleniumHQ
 
 WORKDIR /app
 
-# requirements.txt dosyasını kopyala
+# requirements.txt dosyasını kopyala ve bağımlılıkları yükle
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Proje dosyalarını kopyala (bot.py ve entrypoint.sh dahil)
+# Proje dosyalarını kopyala (bot.py, entrypoint.sh vb.)
 COPY . .
 
 # entrypoint.sh dosyasını çalıştırılabilir yap
 RUN chmod +x /app/entrypoint.sh
 
-# Railway genellikle $PORT ortam değişkeni atar, fakat eğer botunuz dışarıya HTTP sunmuyorsa, bu durum bir sorun yaratmaz.
-# Gerekirse EXPOSE komutu ekleyebilirsiniz:
+# Railway tarafından atanan PORT'u kullan (varsayılan 4444), ama botunuz dış dünyaya HTTP sunmuyor
 EXPOSE ${PORT:-4444}
 
 # Container başlatıldığında entrypoint.sh çalışsın
