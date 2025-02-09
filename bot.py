@@ -25,44 +25,31 @@ def check_for_join_rain_button(driver):
     except Exception:
         return False
 
-def get_webdriver_with_retries(retries=10, delay=2):
+def main():
+    url = "https://500casino.live/"
+
     options = Options()
+    # Deprecation uyarısından kurtulmak için:
     options.add_argument("-headless")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--ignore-certificate-errors")
     options.set_capability("acceptInsecureCerts", True)
     
+    # Normal bir tarayıcı User-Agent'i tanımlıyoruz
     options.set_preference(
         "general.useragent.override",
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36"
     )
+    # WebDriver tespitini zorlaştırmak için (isteğe bağlı)
     options.set_preference("dom.webdriver.enabled", False)
     options.set_preference("useAutomationExtension", False)
-    
-    # Railway ortamında PORT ortam değişkenini kullan; varsayılan 4444
-    port = os.environ.get("PORT", "4444")
-    
-    driver = None
-    for attempt in range(1, retries + 1):
-        try:
-            print(f"Deneme {attempt}: Selenium sunucusuna bağlanmaya çalışılıyor...")
-            driver = webdriver.Remote(
-                command_executor=f"http://localhost:{port}/wd/hub",
-                options=options
-            )
-            print("Bağlantı başarılı!")
-            return driver
-        except Exception as e:
-            print(f"Deneme {attempt} başarısız: {e}")
-            time.sleep(delay)
-    raise Exception("Selenium sunucusuna bağlanılamadı, lütfen sunucunun çalıştığından emin olun.")
 
-def main():
-    url = "https://500casino.live/"
-    
     try:
-        driver = get_webdriver_with_retries(retries=10, delay=2)
+        driver = webdriver.Remote(
+            command_executor="http://localhost:4444/wd/hub",
+            options=options
+        )
     except Exception as e:
         print("Firefox driver başlatılamadı:", e)
         return
@@ -75,26 +62,26 @@ def main():
         driver.quit()
         return
 
-    notified = False
+    notified = False  # Buton tespit edildiğinde bildirim gönderildi mi?
 
     try:
         while True:
             print("Sayfa kontrol ediliyor...")
             driver.refresh()
-            time.sleep(5)
+            time.sleep(5)  # Sayfanın yüklenmesi için bekleme
 
             if check_for_join_rain_button(driver):
                 if not notified:
-                    print("🌧️Rain Out, Join Rain!")
-                    send_discord_notification("🌧️Rain Out, Join Rain!")
-                    notified = True
+                    print("🌧️Rain Out , Join Rain!")
+                    send_discord_notification("🌧️Rain Out , Join Rain!")
+                    notified = True  # Bildirim gönderildi, tekrar göndermesin
                 else:
                     print("Join Rain butonu halen var, ancak bildirim zaten gönderildi.")
             else:
                 print("Join Rain butonu görünmüyor.")
-                notified = False
+                notified = False  # Buton kayboldu, flag sıfırlansın
 
-            time.sleep(60)
+            time.sleep(60)  # 60 saniye bekle
     except KeyboardInterrupt:
         print("Program sonlandırıldı.")
     finally:
