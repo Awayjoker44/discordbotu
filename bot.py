@@ -25,9 +25,7 @@ def check_for_join_rain_button(driver):
     except Exception:
         return False
 
-def main():
-    url = "https://500casino.live/"
-
+def get_webdriver_with_retries(retries=10, delay=2):
     options = Options()
     # Deprecation uyarısından kurtulmak için:
     options.add_argument("-headless")
@@ -44,12 +42,30 @@ def main():
     # WebDriver tespitini zorlaştırmak için (isteğe bağlı)
     options.set_preference("dom.webdriver.enabled", False)
     options.set_preference("useAutomationExtension", False)
+    
+    # Railway ortamında PORT ortam değişkenini kullan; tanımlı değilse varsayılan olarak 4444
+    port = os.environ.get("PORT", "4444")
+    
+    driver = None
+    for attempt in range(1, retries + 1):
+        try:
+            print(f"Deneme {attempt}: Selenium sunucusuna bağlanmaya çalışılıyor...")
+            driver = webdriver.Remote(
+                command_executor=f"http://localhost:{port}/wd/hub",
+                options=options
+            )
+            print("Bağlantı başarılı!")
+            return driver
+        except Exception as e:
+            print(f"Deneme {attempt} başarısız: {e}")
+            time.sleep(delay)
+    raise Exception("Selenium sunucusuna bağlanılamadı, lütfen sunucunun çalıştığından emin olun.")
 
+def main():
+    url = "https://500casino.live/"
+    
     try:
-        driver = webdriver.Remote(
-            command_executor="http://localhost:4444/wd/hub",
-            options=options
-        )
+        driver = get_webdriver_with_retries(retries=10, delay=2)
     except Exception as e:
         print("Firefox driver başlatılamadı:", e)
         return
@@ -62,7 +78,7 @@ def main():
         driver.quit()
         return
 
-    notified = False  # Buton tespit edildiğinde bildirim gönderildi mi?
+    notified = False  # Join Rain butonu tespit edildiğinde bildirim gönderildi mi?
 
     try:
         while True:
@@ -72,14 +88,14 @@ def main():
 
             if check_for_join_rain_button(driver):
                 if not notified:
-                    print("🌧️Rain Out , Join Rain!")
-                    send_discord_notification("🌧️Rain Out , Join Rain!")
+                    print("🌧️Rain Out, Join Rain!")
+                    send_discord_notification("🌧️Rain Out, Join Rain!")
                     notified = True  # Bildirim gönderildi, tekrar göndermesin
                 else:
                     print("Join Rain butonu halen var, ancak bildirim zaten gönderildi.")
             else:
                 print("Join Rain butonu görünmüyor.")
-                notified = False  # Buton kayboldu, flag sıfırlansın
+                notified = False  # Buton kayboldu, bayrak sıfırlansın
 
             time.sleep(60)  # 60 saniye bekle
     except KeyboardInterrupt:
