@@ -1,14 +1,11 @@
-import os
 import time
 import requests
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
 
-# Discord webhook URL'nizi ortam değişkeninden okuyun
-DISCORD_WEBHOOK_URL = os.environ.get("https://discord.com/api/webhooks/1337526949035249797/POENSxYU-IioB_sHwuHzl5CbxbEkxmGISSJ2wO729kaGui0OCQErcDD0wiE0pwmpncFY")
-if not DISCORD_WEBHOOK_URL:
-    raise Exception("Discord webhook URL'si ayarlanmadı. Lütfen DISCORD_WEBHOOK_URL ortam değişkenini ayarlayın.")
+# Discord webhook URL'nizi doğrudan değişkene atıyoruz.
+DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1337526949035249797/POENSxYU-IioB_sHwuHzl5CbxbEkxmGISSJ2wO729kaGui0OCQErcDD0wiE0pwmpncFY"
 
 def send_discord_notification(message):
     data = {"content": message}
