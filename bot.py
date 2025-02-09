@@ -29,7 +29,7 @@ def main():
     url = "https://500casino.live/"
 
     options = Options()
-    # Deprecation uyarısından kurtulmak için:
+    # Deprecation uyarısını gidermek için:
     options.add_argument("-headless")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
@@ -45,9 +45,12 @@ def main():
     options.set_preference("dom.webdriver.enabled", False)
     options.set_preference("useAutomationExtension", False)
 
+    # Railway, genellikle $PORT ortam değişkeni sağlar. Varsayılan olarak 4444 kullanıyoruz.
+    port = os.environ.get("PORT", "4444")
+
     try:
         driver = webdriver.Remote(
-            command_executor="http://localhost:4444/wd/hub",
+            command_executor=f"http://localhost:{port}/wd/hub",
             options=options
         )
     except Exception as e:
