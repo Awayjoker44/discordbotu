@@ -1,10 +1,10 @@
+import os
 import time
 import requests
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
 
-# Discord webhook URL'nizi doğrudan değişkene atıyoruz.
 DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1337526949035249797/POENSxYU-IioB_sHwuHzl5CbxbEkxmGISSJ2wO729kaGui0OCQErcDD0wiE0pwmpncFY"
 
 def send_discord_notification(message):
@@ -20,7 +20,6 @@ def send_discord_notification(message):
 
 def check_for_join_rain_button(driver):
     try:
-        # "Join Rain" metni içeren elementi bulmaya çalışıyoruz.
         button = driver.find_element(By.XPATH, "//*[contains(text(), 'Join Rain')]")
         return button is not None
     except Exception:
@@ -30,28 +29,59 @@ def main():
     url = "https://500casino.live/"
 
     options = Options()
-    options.headless = True  # Tarayıcı arka planda çalışır
+    # Deprecation uyarısından kurtulmak için:
+    options.add_argument("-headless")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--ignore-certificate-errors")
+    options.set_capability("acceptInsecureCerts", True)
+    
+    # Normal bir tarayıcı User-Agent'i tanımlıyoruz
+    options.set_preference(
+        "general.useragent.override",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36"
+    )
+    # WebDriver tespitini zorlaştırmak için (isteğe bağlı)
+    options.set_preference("dom.webdriver.enabled", False)
+    options.set_preference("useAutomationExtension", False)
 
-    # Firefox (geckodriver) ile tarayıcıyı başlatıyoruz
-    driver = webdriver.Firefox(options=options)
-    driver.get(url)
-    print("Siteye bağlanıldı:", url)
+    try:
+        driver = webdriver.Remote(
+            command_executor="http://localhost:4444/wd/hub",
+            options=options
+        )
+    except Exception as e:
+        print("Firefox driver başlatılamadı:", e)
+        return
+
+    try:
+        driver.get(url)
+        print("Siteye bağlanıldı:", url)
+    except Exception as e:
+        print("Siteye bağlanılırken hata oluştu:", e)
+        driver.quit()
+        return
+
+    notified = False  # Buton tespit edildiğinde bildirim gönderildi mi?
 
     try:
         while True:
             print("Sayfa kontrol ediliyor...")
             driver.refresh()
-            time.sleep(5)  # Sayfa yenilendikten sonra JavaScript’in yüklenmesi için bekleme
+            time.sleep(5)  # Sayfanın yüklenmesi için bekleme
 
             if check_for_join_rain_button(driver):
-                print("Join Rain butonu bulundu!")
-                send_discord_notification("Join Rain butonu bulundu!")
+                if not notified:
+                    print("🌧️Rain Out , Join Rain!")
+                    send_discord_notification("🌧️Rain Out , Join Rain!")
+                    notified = True  # Bildirim gönderildi, tekrar göndermesin
+                else:
+                    print("Join Rain butonu halen var, ancak bildirim zaten gönderildi.")
             else:
-                print("Join Rain butonu henüz görünür değil.")
+                print("Join Rain butonu görünmüyor.")
+                notified = False  # Buton kayboldu, flag sıfırlansın
 
-            # Örneğin 60 saniyede bir kontrol ediliyor
-            time.sleep(60)
-
+            time.sleep(60)  # 60 saniye bekle
     except KeyboardInterrupt:
         print("Program sonlandırıldı.")
     finally:
