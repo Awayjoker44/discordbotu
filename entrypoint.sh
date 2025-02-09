@@ -5,7 +5,6 @@ set -e
 PORT_NUM=${PORT:-4444}
 
 echo "Selenium sunucusunu $PORT_NUM portunda başlatıyoruz..."
-# Selenium sunucusunu arka planda başlatıyoruz
 java -jar /opt/selenium-server.jar standalone --port=$PORT_NUM &
 
 echo "Selenium sunucusunun hazır olmasını bekliyoruz..."
@@ -14,5 +13,5 @@ until curl -s http://localhost:$PORT_NUM/wd/hub/status | grep '"ready":true' > /
 done
 echo "Selenium sunucusu hazır!"
 
-# Botunuzu çalıştırın
+# Botu çalıştır
 python bot.py
