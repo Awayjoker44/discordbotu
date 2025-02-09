@@ -1,7 +1,7 @@
 # Python 3.9 slim imajını temel alıyoruz
 FROM python:3.9-slim
 
-# Gerekli sistem bağımlılıklarını, Firefox'u, Java'yı (default-jre) ve diğer kütüphaneleri kuruyoruz
+# Gerekli sistem bağımlılıklarını, Firefox'u, Java'yı ve diğer kütüphaneleri kuruyoruz
 RUN apt-get update && apt-get install -y \
     firefox-esr \
     wget \
@@ -28,14 +28,13 @@ RUN wget --no-verbose -O /tmp/geckodriver.tar.gz "https://github.com/mozilla/gec
     && rm /tmp/geckodriver.tar.gz \
     && chmod +x /usr/local/bin/geckodriver
 
-# Selenium Server Standalone sürümünü belirleyin (örneğin 4.10.0)
+# Selenium Server Standalone'ı indir (örneğin 4.10.0)
 ENV SELENIUM_SERVER_VERSION=4.10.0
 RUN wget --no-verbose -O /opt/selenium-server.jar "https://github.com/SeleniumHQ/selenium/releases/download/selenium-${SELENIUM_SERVER_VERSION}/selenium-server-${SELENIUM_SERVER_VERSION}.jar"
 
-# Çalışma dizinini ayarlıyoruz
 WORKDIR /app
 
-# requirements.txt dosyasını kopyala ve Python bağımlılıklarını yükle
+# requirements.txt dosyasını kopyala
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
@@ -45,5 +44,9 @@ COPY . .
 # entrypoint.sh dosyasını çalıştırılabilir yap
 RUN chmod +x /app/entrypoint.sh
 
-# Container başlatıldığında entrypoint.sh dosyası çalışsın
+# Railway genellikle $PORT ortam değişkeni atar, fakat eğer botunuz dışarıya HTTP sunmuyorsa, bu durum bir sorun yaratmaz.
+# Gerekirse EXPOSE komutu ekleyebilirsiniz:
+EXPOSE ${PORT:-4444}
+
+# Container başlatıldığında entrypoint.sh çalışsın
 ENTRYPOINT ["/app/entrypoint.sh"]
