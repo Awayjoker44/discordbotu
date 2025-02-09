@@ -1,4 +1,3 @@
-import os
 import time
 import requests
 from selenium import webdriver
@@ -29,25 +28,24 @@ def main():
     url = "https://500casino.live/"
 
     options = Options()
-    # Deprecation uyarısını gidermek için:
+    # Deprecation uyarısından kurtulmak için:
     options.add_argument("-headless")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--ignore-certificate-errors")
     options.set_capability("acceptInsecureCerts", True)
     
-    # Normal bir tarayıcı User-Agent'i tanımlıyoruz
+    # Normal bir tarayıcı User-Agent'i tanımlıyoruz:
     options.set_preference(
         "general.useragent.override",
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36"
     )
-    # WebDriver tespitini zorlaştırmak için (isteğe bağlı)
+    # WebDriver tespitini zorlaştırmak için (isteğe bağlı):
     options.set_preference("dom.webdriver.enabled", False)
     options.set_preference("useAutomationExtension", False)
 
-    # Railway, genellikle $PORT ortam değişkeni sağlar. Varsayılan olarak 4444 kullanıyoruz.
-    port = os.environ.get("PORT", "4444")
-
+    # Sabit port olarak 4444 kullanıyoruz (Railway’ın PORT ortam değişkenini görmezden geliyoruz)
+    port = "4444"
     try:
         driver = webdriver.Remote(
             command_executor=f"http://localhost:{port}/wd/hub",
@@ -65,7 +63,7 @@ def main():
         driver.quit()
         return
 
-    notified = False  # Buton tespit edildiğinde bildirim gönderildi mi?
+    notified = False  # Join Rain butonu tespit edildiğinde bildirim gönderildi mi?
 
     try:
         while True:
@@ -82,7 +80,7 @@ def main():
                     print("Join Rain butonu halen var, ancak bildirim zaten gönderildi.")
             else:
                 print("Join Rain butonu görünmüyor.")
-                notified = False  # Buton kayboldu, flag sıfırlansın
+                notified = False  # Buton kayboldu, bayrak sıfırlansın
 
             time.sleep(60)  # 60 saniye bekle
     except KeyboardInterrupt:
