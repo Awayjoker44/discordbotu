@@ -4,7 +4,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
 
-DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1337526949035249797/POENSxYU-IioB_sHwuHzl5CbxbEkxmGISSJ2wO729kaGui0OCQErcDD0wiE0pwmpncFY"
+DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1338262956621692988/tqXGd7lds4n82S0l3239mDifIuYBxsARVs2Ik8ltMLTGpo3jcY8Pmqz2AnGeLhkAj7f_"
 
 def send_discord_notification(message):
     data = {"content": message}
