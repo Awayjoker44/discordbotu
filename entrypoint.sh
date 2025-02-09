@@ -1,10 +1,11 @@
 #!/bin/bash
 set -e
 
-# Railway tarafından atanan PORT'u kullan; tanımlı değilse varsayılan olarak 4444
+# Render (veya Railway) tarafından atanan PORT'u kullan; tanımlı değilse varsayılan olarak 4444
 PORT_NUM=${PORT:-4444}
 
 echo "Selenium sunucusunu $PORT_NUM portunda başlatıyoruz..."
+# Selenium sunucusunu arka planda başlatıyoruz
 java -jar /opt/selenium-server.jar standalone --port=$PORT_NUM &
 
 echo "Selenium sunucusunun hazır olmasını bekliyoruz..."
