@@ -27,23 +27,20 @@ def check_for_join_rain_button(driver):
 
 def get_webdriver_with_retries(retries=10, delay=2):
     options = Options()
-    # Deprecation uyarısından kurtulmak için:
     options.add_argument("-headless")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--ignore-certificate-errors")
     options.set_capability("acceptInsecureCerts", True)
     
-    # Normal bir tarayıcı User-Agent'i tanımlıyoruz
     options.set_preference(
         "general.useragent.override",
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36"
     )
-    # WebDriver tespitini zorlaştırmak için (isteğe bağlı)
     options.set_preference("dom.webdriver.enabled", False)
     options.set_preference("useAutomationExtension", False)
     
-    # Railway ortamında PORT ortam değişkenini kullan; tanımlı değilse varsayılan olarak 4444
+    # Railway ortamında PORT ortam değişkenini kullan; varsayılan 4444
     port = os.environ.get("PORT", "4444")
     
     driver = None
@@ -78,26 +75,26 @@ def main():
         driver.quit()
         return
 
-    notified = False  # Join Rain butonu tespit edildiğinde bildirim gönderildi mi?
+    notified = False
 
     try:
         while True:
             print("Sayfa kontrol ediliyor...")
             driver.refresh()
-            time.sleep(5)  # Sayfanın yüklenmesi için bekleme
+            time.sleep(5)
 
             if check_for_join_rain_button(driver):
                 if not notified:
                     print("🌧️Rain Out, Join Rain!")
                     send_discord_notification("🌧️Rain Out, Join Rain!")
-                    notified = True  # Bildirim gönderildi, tekrar göndermesin
+                    notified = True
                 else:
                     print("Join Rain butonu halen var, ancak bildirim zaten gönderildi.")
             else:
                 print("Join Rain butonu görünmüyor.")
-                notified = False  # Buton kayboldu, bayrak sıfırlansın
+                notified = False
 
-            time.sleep(60)  # 60 saniye bekle
+            time.sleep(60)
     except KeyboardInterrupt:
         print("Program sonlandırıldı.")
     finally:
