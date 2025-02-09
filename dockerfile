@@ -44,7 +44,7 @@ COPY . .
 # entrypoint.sh dosyasını çalıştırılabilir yap
 RUN chmod +x /app/entrypoint.sh
 
-# Railway tarafından atanan PORT'u kullan, varsayılan olarak 4444
+# Railway/Render tarafından atanan PORT ortam değişkenini kullan, tanımlı değilse varsayılan 4444
 EXPOSE ${PORT:-4444}
 
 # Container başlatıldığında entrypoint.sh çalışsın
