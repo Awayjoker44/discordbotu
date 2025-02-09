@@ -28,7 +28,7 @@ RUN wget --no-verbose -O /tmp/geckodriver.tar.gz "https://github.com/mozilla/gec
     && rm /tmp/geckodriver.tar.gz \
     && chmod +x /usr/local/bin/geckodriver
 
-# Selenium Server Standalone'ı indir (örneğin 4.10.0)
+# Selenium Server Standalone'ı indir (örneğin, 4.10.0)
 ENV SELENIUM_SERVER_VERSION=4.10.0
 RUN wget --no-verbose -O /opt/selenium-server.jar "https://github.com/SeleniumHQ/selenium/releases/download/selenium-${SELENIUM_SERVER_VERSION}/selenium-server-${SELENIUM_SERVER_VERSION}.jar"
 
@@ -44,7 +44,7 @@ COPY . .
 # entrypoint.sh dosyasını çalıştırılabilir yap
 RUN chmod +x /app/entrypoint.sh
 
-# Railway tarafından atanan PORT'u kullan (varsayılan 4444), ama botunuz dış dünyaya HTTP sunmuyor
+# Railway tarafından atanan PORT'u kullan, varsayılan olarak 4444
 EXPOSE ${PORT:-4444}
 
 # Container başlatıldığında entrypoint.sh çalışsın
