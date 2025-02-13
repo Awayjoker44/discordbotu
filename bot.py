@@ -29,6 +29,10 @@ def main():
     url = "https://500casino.live/"
 
     options = Options()
+    # Firefox binary konumunu manuel olarak belirtiyoruz.
+    # Railway ortamınızda Firefox'un yeri farklı ise, uygun yolu yazınız.
+    options.binary_location = "/usr/bin/firefox"  # veya "/usr/bin/firefox-esr" deneyebilirsiniz
+
     # Headless modda çalıştırmak için:
     options.add_argument("-headless")
     options.add_argument("--no-sandbox")
