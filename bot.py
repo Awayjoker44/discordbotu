@@ -5,7 +5,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
 
-DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1338262956621692988/tqXGd7lds4n82S0l3239mDifIuYBxsARVs2Ik8ltMLTGpo3jcY8Pmqz2AnGeLhkAj7f_"
+DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1339728170479517816/AP9W_ZO9C5Tw_OUkAnH8_WBQKdkHrJtuoGDvJLHDeJy8USQVNbPoYRP3xK0UZM0ZDemo"
 
 def send_discord_notification(message):
     data = {"content": message}
@@ -29,29 +29,25 @@ def main():
     url = "https://500casino.live/"
 
     options = Options()
-    # Deprecation uyarısını gidermek için:
+    # Headless modda çalıştırmak için:
     options.add_argument("-headless")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--ignore-certificate-errors")
     options.set_capability("acceptInsecureCerts", True)
     
-    # Normal bir tarayıcı User-Agent'i tanımlıyoruz:
+    # Gerçek bir tarayıcı gibi görünmek için User-Agent ayarı
     options.set_preference(
         "general.useragent.override",
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36"
     )
-    # WebDriver tespitini zorlaştırmak için (isteğe bağlı):
+    # Otomasyon tespitini zorlaştırmak için bazı ayarlar:
     options.set_preference("dom.webdriver.enabled", False)
     options.set_preference("useAutomationExtension", False)
 
-    # Railway ortamında PORT ortam değişkenini kullan; tanımlı değilse varsayılan 4444
-    port = os.environ.get("PORT", "4444")
     try:
-        driver = webdriver.Remote(
-            command_executor=f"http://localhost:{port}/wd/hub",
-            options=options
-        )
+        # Yerel Firefox driver'ı ile çalıştırıyoruz
+        driver = webdriver.Firefox(options=options)
     except Exception as e:
         print("Firefox driver başlatılamadı:", e)
         return
@@ -64,7 +60,7 @@ def main():
         driver.quit()
         return
 
-    notified = False  # Join Rain butonu tespit edildiğinde bildirim gönderildi mi?
+    notified = False  # Bildirim gönderildi mi kontrolü
 
     try:
         while True:
@@ -74,14 +70,14 @@ def main():
 
             if check_for_join_rain_button(driver):
                 if not notified:
-                    print("🌧️Rain Out, Join Rain!")
-                    send_discord_notification("🌧️Rain Out, Join Rain!")
+                    print("🌧️ Rain Out, Join Rain!")
+                    send_discord_notification("🌧️ Rain Out, Join Rain!")
                     notified = True  # Bildirim gönderildi, tekrar göndermesin
                 else:
                     print("Join Rain butonu halen var, ancak bildirim zaten gönderildi.")
             else:
                 print("Join Rain butonu görünmüyor.")
-                notified = False  # Buton kayboldu, flag sıfırlansın
+                notified = False  # Buton kaybolduysa flag sıfırlansın
 
             time.sleep(60)  # 60 saniye bekle
     except KeyboardInterrupt:
