@@ -4,6 +4,7 @@ import requests
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.firefox.service import Service  # Selenium 4 için
 
 DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1339728170479517816/AP9W_ZO9C5Tw_OUkAnH8_WBQKdkHrJtuoGDvJLHDeJy8USQVNbPoYRP3xK0UZM0ZDemo"
 
@@ -29,10 +30,9 @@ def main():
     url = "https://500casino.live/"
 
     options = Options()
-    # Firefox binary konumunu manuel olarak belirtiyoruz.
-    # Railway ortamınızda Firefox'un yeri farklı ise, uygun yolu yazınız.
-    options.binary_location = "/usr/bin/firefox-esr"  # veya "/usr/bin/firefox-esr" deneyebilirsiniz
-
+    # Eğer Firefox'un binary konumunu belirtmeniz gerekirse (opsiyonel):
+    # options.binary_location = r"C:\Program Files\Mozilla Firefox\firefox.exe"
+    
     # Headless modda çalıştırmak için:
     options.add_argument("-headless")
     options.add_argument("--no-sandbox")
@@ -50,8 +50,9 @@ def main():
     options.set_preference("useAutomationExtension", False)
 
     try:
-        # Yerel Firefox driver'ı ile çalıştırıyoruz
-        driver = webdriver.Firefox(options=options)
+        # Geckodriver.exe'nin tam yolunu belirtiyoruz
+        service = Service(executable_path=r"C:\Users\blood\OneDrive\Masaüstü\Firefoxlu\geckodriver.exe")
+        driver = webdriver.Firefox(service=service, options=options)
     except Exception as e:
         print("Firefox driver başlatılamadı:", e)
         return
