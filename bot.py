@@ -31,7 +31,7 @@ def main():
     options = Options()
     # Firefox binary konumunu manuel olarak belirtiyoruz.
     # Railway ortamınızda Firefox'un yeri farklı ise, uygun yolu yazınız.
-    options.binary_location = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs"  # veya "/usr/bin/firefox-esr" deneyebilirsiniz
+    options.binary_location = "/usr/bin/firefox-esr"  # veya "/usr/bin/firefox-esr" deneyebilirsiniz
 
     # Headless modda çalıştırmak için:
     options.add_argument("-headless")
