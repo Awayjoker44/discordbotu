@@ -1,6 +1,9 @@
 # Python 3.9 slim imajını temel alıyoruz
 FROM python:3.9-slim
 
+# Paket kurulumu sırasında interaktif soruları devre dışı bırakıyoruz
+ENV DEBIAN_FRONTEND=noninteractive
+
 # Gerekli sistem bağımlılıklarını, Firefox'u, Java'yı ve diğer kütüphaneleri kuruyoruz
 RUN apt-get update && apt-get install -y \
     firefox-esr \
@@ -20,6 +23,9 @@ RUN apt-get update && apt-get install -y \
     libpangocairo-1.0-0 \
     libatspi2.0-0 \
     && rm -rf /var/lib/apt/lists/*
+
+# Firefox'un varsayılan binary yolunu oluşturmak için sembolik link ekliyoruz
+RUN ln -s /usr/bin/firefox-esr /usr/bin/firefox
 
 # Geckodriver'ın uygun sürümünü indir ve kur (v0.35.0)
 ENV GECKODRIVER_VERSION=v0.35.0
@@ -44,7 +50,7 @@ COPY . .
 # entrypoint.sh dosyasını çalıştırılabilir yap
 RUN chmod +x /app/entrypoint.sh
 
-# Railway/Render tarafından atanan PORT ortam değişkenini kullan, tanımlı değilse varsayılan 4444
+# Railway tarafından atanan PORT'u kullan, varsayılan olarak 4444
 EXPOSE ${PORT:-4444}
 
 # Container başlatıldığında entrypoint.sh çalışsın
